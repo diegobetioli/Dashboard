@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .chart-container { background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 20px; width: 90%; max-width: 600px; }
+        h2 { color: #333; font-size: 1.2rem; text-align: center; }
+        .highlight { color: #0077b5; font-weight: bold; } /* Cor oficial LinkedIn */
+    </style>
+</head>
+<body>
+
+    <div class="chart-container">
+        <h2>LinkedIn Case: <span class="highlight">Alexandre Magnani</span></h2>
+        <canvas id="mainChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <h2>Crescimento de Reações: <span class="highlight">+932%</span></h2>
+        <canvas id="growthChart"></canvas>
+    </div>
+
+    <script>
+        // Gráfico Principal - Números Absolutos
+        const ctx1 = document.getElementById('mainChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['Seguidores', 'Interações'],
+                datasets: [{
+                    label: 'Total Acumulado (mil)',
+                    data: [32.1, 47],
+                    backgroundColor: ['#0077b5', '#00a0dc'],
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // Gráfico de Pizza - Distribuição de Esforço
+        const ctx2 = document.getElementById('growthChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['Crescimento Médio', 'Base Anterior'],
+                datasets: [{
+                    data: [932, 100],
+                    backgroundColor: ['#28a745', '#e9ecef'],
+                    hoverOffset: 4
+                }]
+            },
+            options: { cutout: '70%' }
+        });
+    </script>
+</body>
+</html>
