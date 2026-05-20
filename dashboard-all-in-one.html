@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Political Media Dashboard</title>
+<style>
+/* ══════════════════════════════════════════════════════
+   Political Media Dashboard — Styles
+══════════════════════════════════════════════════════ */
+
+:root {
+    --bg-base:      #0c0e1a;
+    --bg-surface:   #131628;
+    --bg-card:      #181b2e;
+    --bg-card-alt:  #1e2240;
+    --bg-hover:     #222644;
+    --border:       rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.14);
+
+    --text-primary:   #F1F5F9;
+    --text-secondary: #94A3B8;
+    --text-muted:     #4B5A74;
+
+    --ig-start:  #F58529;
+    --ig-mid:    #DD2A7B;
+    --ig-end:    #8134AF;
+    --ig-color:  #E1306C;
+    --tt-color:  #69C9D0;
+    --tt-bg:     #010101;
+
+    --accent:        #7C3AED;
+    --accent-hover:  #6D28D9;
+    --accent-glow:   rgba(124,58,237,0.35);
+
+    --green:  #34D399;
+    --red:    #F87171;
+
+    --radius:    14px;
+    --radius-sm:  9px;
+    --radius-xs:  5px;
+
+    --header-h:  60px;
+    --sidebar-w: 272px;
+
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+    --shadow-md: 0 6px 24px rgba(0,0,0,0.4);
+    --shadow-lg: 0 12px 48px rgba(0,0,0,0.5);
+
+    --transition: 0.18s ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-base);
+    color: var(--text-primary);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+/* ── Header ── */
+.header {
+    position: sticky; top: 0; z-index: 200;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    height: var(--header-h);
+}
+.header-content {
+    max-width: 1700px; margin: 0 auto; height: 100%;
+    padding: 0 20px; display: flex; align-items: center; gap: 12px;
+}
+.mobile-menu-btn {
+    display: none; background: none;
+    border: 1px solid var(--border); color: var(--text-secondary);
+    width: 36px; height: 36px; border-radius: var(--radius-xs);
+    font-size: 18px; cursor: pointer; flex-shrink: 0; transition: var(--transition);
+}
+.mobile-menu-btn:hover { color: var(--text-primary); background: var(--bg-hover); }
+.logo { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.logo-icon { font-size: 26px; flex-shrink: 0; }
+.logo h1 { font-size: 1.05rem; font-weight: 700; white-space: nowrap; letter-spacing: -0.02em; }
+.logo h1 span { color: var(--accent); }
+.logo-sub { font-size: 0.68rem; color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; }
+.header-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+/* ── Buttons ── */
+.btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 18px; border-radius: var(--radius-sm);
+    font-size: 0.875rem; font-weight: 600; cursor: pointer;
+    transition: all var(--transition); border: none; text-decoration: none;
+    white-space: nowrap; line-height: 1;
+}
+.btn svg { flex-shrink: 0; }
+.btn-primary { background: var(--accent); color: #fff; box-shadow: 0 0 0 0 var(--accent-glow); }
+.btn-primary:hover { background: var(--accent-hover); box-shadow: 0 4px 16px var(--accent-glow); transform: translateY(-1px); }
+.btn-outline { background: transparent; color: var(--text-secondary); border: 1px solid var(--border-hover); }
+.btn-outline:hover { background: var(--bg-hover); color: var(--text-primary); border-color: rgba(255,255,255,0.2); }
+.btn-ghost { background: transparent; color: var(--text-secondary); border: none; }
+.btn-ghost:hover { color: var(--text-primary); background: var(--bg-hover); }
+.btn-sm { padding: 7px 14px; font-size: 0.8rem; }
+.btn-xs { padding: 5px 10px; font-size: 0.75rem; }
+.btn-danger { background: transparent; color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+.btn-danger:hover { background: rgba(248,113,113,0.1); }
+.icon-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: var(--radius-xs); border: none;
+    background: transparent; color: var(--text-muted); cursor: pointer;
+    font-size: 14px; transition: var(--transition); flex-shrink: 0;
+}
+.icon-btn:hover { color: var(--text-primary); background: var(--bg-hover); }
+.icon-btn.danger:hover { color: var(--red); background: rgba(248,113,113,0.1); }
+
+/* ── Layout ── */
+.layout {
+    display: flex; max-width: 1700px; margin: 0 auto;
+    min-height: calc(100vh - var(--header-h));
+}
+.sidebar-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6); z-index: 150; backdrop-filter: blur(2px);
+}
+
+/* ── Sidebar ── */
+.sidebar {
+    width: var(--sidebar-w); flex-shrink: 0;
+    background: var(--bg-surface); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    position: sticky; top: var(--header-h);
+    height: calc(100vh - var(--header-h)); overflow-y: auto;
+}
+.sidebar-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 16px 12px; border-bottom: 1px solid var(--border);
+}
+.sidebar-title { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.close-sidebar-btn { display: none; }
+
+.platform-tabs { display: flex; gap: 4px; padding: 10px; border-bottom: 1px solid var(--border); }
+.tab-btn {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
+    padding: 7px 6px; border: 1px solid var(--border); border-radius: var(--radius-xs);
+    background: transparent; color: var(--text-muted);
+    font-size: 0.72rem; font-weight: 600; cursor: pointer; transition: var(--transition); white-space: nowrap;
+}
+.tab-btn:hover { background: var(--bg-hover); color: var(--text-secondary); }
+.tab-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.tab-btn.active-ig { background: linear-gradient(135deg, var(--ig-start), var(--ig-end)); color: #fff; border-color: transparent; }
+.tab-btn.active-tt { background: var(--tt-bg); color: var(--tt-color); border-color: var(--tt-color); }
+
+.profiles-list {
+    flex: 1; padding: 10px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto;
+}
+.profile-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 10px 10px 12px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border); background: var(--bg-card);
+    cursor: pointer; transition: var(--transition); position: relative;
+}
+.profile-item:hover { background: var(--bg-card-alt); border-color: var(--border-hover); }
+.profile-item.active    { background: rgba(124,58,237,0.12); border-color: var(--accent); }
+.profile-item.active-ig { background: rgba(225,48,108,0.1);  border-color: var(--ig-color); }
+.profile-item.active-tt { background: rgba(105,201,208,0.08); border-color: var(--tt-color); }
+
+.profile-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0; letter-spacing: -0.02em;
+}
+.profile-avatar.instagram { background: linear-gradient(135deg, var(--ig-start), var(--ig-mid), var(--ig-end)); }
+.profile-avatar.tiktok    { background: var(--tt-bg); color: var(--tt-color); border: 2px solid var(--tt-color); font-size: 11px; }
+
+.profile-info { flex: 1; min-width: 0; }
+.profile-name     { font-size: 0.82rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.profile-username { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.profile-party    { font-size: 0.65rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+
+.profile-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+
+.platform-badge { font-size: 0.6rem; font-weight: 700; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.04em; flex-shrink: 0; }
+.platform-badge.instagram { background: rgba(225,48,108,0.18); color: var(--ig-color); }
+.platform-badge.tiktok    { background: rgba(105,201,208,0.15); color: var(--tt-color); }
+
+.post-count-badge {
+    font-size: 0.65rem; font-weight: 700; color: var(--text-muted);
+    background: var(--bg-base); padding: 2px 6px; border-radius: 99px; min-width: 20px; text-align: center;
+}
+.profile-actions { display: flex; gap: 2px; opacity: 0; transition: var(--transition); margin-left: 2px; }
+.profile-item:hover .profile-actions { opacity: 1; }
+
+.sidebar-footer { padding: 10px; border-top: 1px solid var(--border); }
+.sidebar-add-btn { width: 100%; justify-content: center; }
+
+.sidebar-empty { text-align: center; padding: 32px 16px; color: var(--text-muted); font-size: 0.78rem; line-height: 1.6; }
+.sidebar-empty-icon { font-size: 32px; margin-bottom: 10px; opacity: 0.5; }
+
+/* ── Main Content ── */
+.main-content {
+    flex: 1; min-width: 0; padding: 20px 24px 40px;
+    display: flex; flex-direction: column; gap: 18px;
+}
+.content-header {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+}
+.stats-bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.stat-chip {
+    display: flex; align-items: center; gap: 6px; padding: 6px 12px;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 99px; font-size: 0.78rem;
+}
+.stat-chip-value { font-weight: 700; color: var(--text-primary); }
+.stat-chip-label { color: var(--text-muted); }
+.stat-chip-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.stat-chip-dot.ig  { background: var(--ig-color); }
+.stat-chip-dot.tt  { background: var(--tt-color); }
+.stat-chip-dot.all { background: var(--accent); }
+
+.controls-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.sort-wrapper { display: flex; align-items: center; gap: 6px; color: var(--text-muted); }
+.sort-select {
+    padding: 7px 10px; border-radius: var(--radius-xs); border: 1px solid var(--border);
+    background: var(--bg-card); color: var(--text-secondary); font-size: 0.78rem;
+    cursor: pointer; outline: none; transition: var(--transition);
+}
+.sort-select:focus { border-color: var(--accent); }
+.sort-select option { background: var(--bg-surface); }
+
+.view-controls {
+    display: flex; gap: 2px; background: var(--bg-card);
+    padding: 3px; border-radius: var(--radius-xs); border: 1px solid var(--border);
+}
+.view-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 30px; height: 28px; border-radius: 5px; border: none;
+    background: transparent; color: var(--text-muted); cursor: pointer; transition: var(--transition);
+}
+.view-btn:hover { color: var(--text-secondary); }
+.view-btn.active { background: var(--accent); color: #fff; }
+
+.active-filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-height: 0; }
+.filter-chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px;
+    border-radius: 99px; font-size: 0.75rem; font-weight: 600;
+    background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3);
+}
+.filter-chip button {
+    background: none; border: none; color: inherit; cursor: pointer;
+    opacity: 0.7; font-size: 12px; padding: 0; line-height: 1; display: flex;
+}
+.filter-chip button:hover { opacity: 1; }
+
+/* ── Gallery ── */
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; align-items: start; }
+.gallery.list-view { grid-template-columns: 1fr; max-width: 720px; }
+
+/* ── Post Card ── */
+.post-card {
+    background: var(--bg-card); border-radius: var(--radius);
+    border: 1px solid var(--border); overflow: hidden;
+    transition: all var(--transition); display: flex; flex-direction: column;
+}
+.post-card:hover { border-color: var(--border-hover); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.post-card.instagram:hover { border-color: rgba(225,48,108,0.4); }
+.post-card.tiktok:hover    { border-color: rgba(105,201,208,0.35); }
+
+.post-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px; border-bottom: 1px solid var(--border); gap: 8px;
+}
+.post-profile-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.post-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800; color: #fff; flex-shrink: 0;
+}
+.post-avatar.instagram { background: linear-gradient(135deg, var(--ig-start), var(--ig-mid), var(--ig-end)); }
+.post-avatar.tiktok    { background: var(--tt-bg); color: var(--tt-color); border: 1.5px solid var(--tt-color); font-size: 9px; }
+.post-profile-info { min-width: 0; }
+.post-profile-name     { font-size: 0.82rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.post-profile-username { font-size: 0.7rem; color: var(--text-muted); }
+.post-card-controls { display: flex; gap: 2px; flex-shrink: 0; opacity: 0; transition: var(--transition); }
+.post-card:hover .post-card-controls { opacity: 1; }
+
+.post-embed-container { background: var(--bg-base); position: relative; width: 100%; overflow: hidden; }
+.post-embed-container iframe { width: 100%; border: none; display: block; }
+.embed-loading {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 12px;
+    background: var(--bg-base); color: var(--text-muted); font-size: 0.8rem;
+}
+.embed-loading-spinner {
+    width: 28px; height: 28px; border: 2px solid var(--border);
+    border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.post-card-footer {
+    padding: 10px 14px; border-top: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 6px; margin-top: auto;
+}
+.post-notes-text {
+    font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5;
+    padding: 8px 10px; background: var(--bg-base); border-radius: var(--radius-xs);
+    border-left: 2px solid var(--accent);
+}
+.post-footer-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.post-date { font-size: 0.68rem; color: var(--text-muted); }
+
+/* ── Empty State ── */
+.empty-state {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 60px 24px; text-align: center; gap: 14px; animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.empty-icon { font-size: 56px; opacity: 0.4; margin-bottom: 4px; }
+.empty-state h3 { font-size: 1.2rem; font-weight: 700; color: var(--text-secondary); }
+.empty-state p  { font-size: 0.875rem; color: var(--text-muted); max-width: 400px; line-height: 1.6; }
+.empty-actions  { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
+
+.onboarding-steps {
+    display: flex; flex-direction: column; gap: 0; width: 100%; max-width: 420px; margin-top: 24px;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden; text-align: left;
+}
+.step { display: flex; align-items: flex-start; gap: 14px; padding: 16px 18px; border-bottom: 1px solid var(--border); }
+.step:last-child { border-bottom: none; }
+.step-num {
+    width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff;
+    font-size: 0.78rem; font-weight: 700; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+}
+.step-text { display: flex; flex-direction: column; gap: 2px; }
+.step-text strong { font-size: 0.85rem; color: var(--text-primary); }
+.step-text span   { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; }
+
+/* ── Modals ── */
+.modal { display: none; position: fixed; inset: 0; z-index: 500; align-items: center; justify-content: center; padding: 16px; }
+.modal.open { display: flex; }
+.modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); }
+.modal-content {
+    position: relative; background: var(--bg-surface); border: 1px solid var(--border-hover);
+    border-radius: var(--radius); width: 100%; max-width: 480px;
+    max-height: calc(100vh - 40px); overflow-y: auto;
+    box-shadow: var(--shadow-lg); animation: modalIn 0.22s ease;
+}
+@keyframes modalIn { from { transform: scale(0.96) translateY(10px); opacity: 0; } to { transform: none; opacity: 1; } }
+.modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 22px 16px; border-bottom: 1px solid var(--border);
+}
+.modal-header h2 { font-size: 1rem; font-weight: 700; }
+.modal-close {
+    display: flex; align-items: center; justify-content: center; background: none; border: none;
+    color: var(--text-muted); cursor: pointer; padding: 4px; border-radius: var(--radius-xs); transition: var(--transition);
+}
+.modal-close:hover { color: var(--text-primary); background: var(--bg-hover); }
+
+form { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 7px; }
+.form-group label { font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); }
+.optional { font-weight: 400; color: var(--text-muted); font-size: 0.75rem; }
+
+.form-group input, .form-group select, .form-group textarea {
+    padding: 10px 13px; border-radius: var(--radius-sm); border: 1px solid var(--border-hover);
+    background: var(--bg-card); color: var(--text-primary); font-size: 0.875rem;
+    transition: var(--transition); font-family: inherit; outline: none; width: 100%;
+}
+.form-group input::placeholder, .form-group textarea::placeholder { color: var(--text-muted); }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+.form-group textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+.form-group small { font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; }
+.form-group select option { background: var(--bg-surface); }
+
+.input-with-prefix {
+    display: flex; border-radius: var(--radius-sm); border: 1px solid var(--border-hover);
+    overflow: hidden; transition: var(--transition);
+}
+.input-with-prefix:focus-within { border-color: var(--accent); }
+.input-prefix {
+    padding: 10px 12px; background: var(--bg-base); color: var(--text-muted);
+    font-size: 0.9rem; font-weight: 600; border-right: 1px solid var(--border-hover);
+    display: flex; align-items: center; flex-shrink: 0;
+}
+.input-with-prefix input { border: none !important; border-radius: 0 !important; flex: 1; }
+.input-with-prefix input:focus { box-shadow: none; }
+
+.platform-select { display: flex; gap: 8px; }
+.platform-option {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px; border-radius: var(--radius-sm); border: 2px solid var(--border-hover);
+    background: var(--bg-card); color: var(--text-secondary);
+    font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: var(--transition);
+}
+.platform-option:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.2); }
+.platform-option.active[data-platform="instagram"] { border-color: var(--ig-color); background: rgba(225,48,108,0.1); color: var(--ig-color); }
+.platform-option.active[data-platform="tiktok"]    { border-color: var(--tt-color); background: rgba(105,201,208,0.1); color: var(--tt-color); }
+
+.url-preview { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 13px; animation: fadeIn 0.2s ease; }
+.url-preview-inner { display: flex; align-items: center; gap: 10px; }
+.url-preview-icon { font-size: 22px; flex-shrink: 0; }
+.url-preview-text { font-size: 0.78rem; color: var(--green); font-weight: 600; }
+
+.form-actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 4px; }
+
+/* ── Toast ── */
+.toast-container {
+    position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+    display: flex; flex-direction: column; gap: 8px; pointer-events: none;
+}
+.toast {
+    background: var(--bg-surface); border: 1px solid var(--border-hover); border-radius: var(--radius-sm);
+    padding: 11px 16px; font-size: 0.83rem; font-weight: 500; color: var(--text-primary);
+    box-shadow: var(--shadow-md); animation: toastIn 0.3s ease; max-width: 320px; pointer-events: auto;
+}
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error   { border-left: 3px solid var(--red); }
+.toast.info    { border-left: 3px solid var(--accent); }
+@keyframes toastIn  { from { transform: translateX(110%); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes toastOut { to { transform: translateX(110%); opacity: 0; } }
+.toast.removing { animation: toastOut 0.3s ease forwards; }
+
+/* ── Responsive ── */
+@media (max-width: 900px) { .gallery { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); } }
+
+@media (max-width: 768px) {
+    .mobile-menu-btn { display: flex; }
+    .close-sidebar-btn { display: flex; }
+    .logo-sub { display: none; }
+    .sidebar {
+        position: fixed; top: 0; left: 0; height: 100vh; z-index: 160;
+        transform: translateX(-100%); transition: transform 0.25s ease;
+        width: min(var(--sidebar-w), 85vw);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-overlay.open { display: block; }
+    .main-content { padding: 14px 14px 32px; }
+    .gallery { grid-template-columns: 1fr; }
+    .gallery.list-view { max-width: 100%; }
+    .content-header { flex-direction: column; align-items: flex-start; }
+    .sort-wrapper svg { display: none; }
+    .sort-select { font-size: 0.8rem; }
+}
+@media (max-width: 480px) {
+    :root { --header-h: 56px; }
+    .logo h1 { font-size: 0.92rem; }
+    .logo-icon { font-size: 22px; }
+    .header-actions .btn span { display: none; }
+    .header-actions .btn { padding: 7px 10px; }
+    .platform-tabs { gap: 3px; }
+    .tab-btn { font-size: 0.68rem; padding: 6px 4px; }
+    .modal-content { max-height: calc(100vh - 20px); }
+}
+</style>
+</head>
+<body>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <button class="mobile-menu-btn" id="mobileSidebarToggle" onclick="toggleSidebar()">☰</button>
+            <div class="logo">
+                <span class="logo-icon">🏛️</span>
+                <div class="logo-text">
+                    <h1>Political Media <span>Dashboard</span></h1>
+                    <p class="logo-sub">Benchmarking de Redes Sociais</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-outline btn-sm" id="addPostBtn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <span>Post</span>
+                </button>
+                <button class="btn btn-primary btn-sm" id="addProfileBtn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <span>Perfil</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Layout -->
+    <div class="layout">
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">Perfis Monitorados</span>
+                <button class="icon-btn close-sidebar-btn" onclick="toggleSidebar()">✕</button>
+            </div>
+            <div class="platform-tabs">
+                <button class="tab-btn active" data-platform="all">Todos</button>
+                <button class="tab-btn" data-platform="instagram">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    Instagram
+                </button>
+                <button class="tab-btn" data-platform="tiktok">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.15 8.15 0 0 0 4.76 1.52V6.76a4.85 4.85 0 0 1-1-.07z"/></svg>
+                    TikTok
+                </button>
+            </div>
+            <div class="profiles-list" id="profilesList"></div>
+            <div class="sidebar-footer">
+                <button class="btn btn-outline sidebar-add-btn" id="sidebarAddProfileBtn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Adicionar Perfil
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-header">
+                <div class="stats-bar" id="statsBar"></div>
+                <div class="controls-right">
+                    <div class="sort-wrapper">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                        <select id="sortSelect" class="sort-select">
+                            <option value="newest">Mais recentes</option>
+                            <option value="oldest">Mais antigos</option>
+                            <option value="profile">Por perfil</option>
+                            <option value="platform">Por plataforma</option>
+                        </select>
+                    </div>
+                    <div class="view-controls">
+                        <button class="view-btn active" data-view="gallery" title="Galeria">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                        </button>
+                        <button class="view-btn" data-view="list" title="Lista">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="active-filters" id="activeFilters"></div>
+            <div class="gallery" id="postsGallery"></div>
+
+            <div class="empty-state" id="emptyState" style="display:none">
+                <div class="empty-icon" id="emptyIcon">📱</div>
+                <h3 id="emptyTitle">Comece adicionando perfis</h3>
+                <p id="emptyMessage">Monitore e compare os posts de políticos no Instagram e TikTok.</p>
+                <div class="empty-actions">
+                    <button class="btn btn-outline" id="emptyAddProfileBtn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Novo Perfil
+                    </button>
+                    <button class="btn btn-primary" id="emptyAddPostBtn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        Adicionar Post
+                    </button>
+                </div>
+                <div class="onboarding-steps" id="onboardingSteps">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-text">
+                            <strong>Adicione um perfil</strong>
+                            <span>Nome, plataforma e @username do político</span>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-text">
+                            <strong>Cole URLs de posts</strong>
+                            <span>Links do Instagram (instagram.com/p/...) ou TikTok (@user/video/...)</span>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-text">
+                            <strong>Compare e analise</strong>
+                            <span>Visualize e faça benchmarking do conteúdo lado a lado</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Adicionar Perfil -->
+    <div class="modal" id="profileModal">
+        <div class="modal-backdrop" onclick="closeModal('profileModal')"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Novo Perfil</h2>
+                <button class="modal-close" onclick="closeModal('profileModal')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label for="profileName">Nome do Político</label>
+                    <input type="text" id="profileName" placeholder="Ex: Lula, Bolsonaro, Marina Silva..." required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Plataforma</label>
+                    <div class="platform-select">
+                        <button type="button" class="platform-option active" data-platform="instagram">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                            Instagram
+                        </button>
+                        <button type="button" class="platform-option" data-platform="tiktok">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.15 8.15 0 0 0 4.76 1.52V6.76a4.85 4.85 0 0 1-1-.07z"/></svg>
+                            TikTok
+                        </button>
+                    </div>
+                    <input type="hidden" id="selectedPlatform" value="instagram">
+                </div>
+                <div class="form-group">
+                    <label for="profileUsername">Username</label>
+                    <div class="input-with-prefix">
+                        <span class="input-prefix">@</span>
+                        <input type="text" id="profileUsername" placeholder="username" required autocomplete="off">
+                    </div>
+                    <small>Apenas o nome de usuário, sem o @</small>
+                </div>
+                <div class="form-group">
+                    <label for="profileParty">Partido / Cargo <span class="optional">(opcional)</span></label>
+                    <input type="text" id="profileParty" placeholder="Ex: PT - Presidente, PL - Senador..." autocomplete="off">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('profileModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Adicionar Perfil</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Adicionar Post -->
+    <div class="modal" id="postModal">
+        <div class="modal-backdrop" onclick="closeModal('postModal')"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Post</h2>
+                <button class="modal-close" onclick="closeModal('postModal')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <form id="postForm">
+                <div class="form-group">
+                    <label for="postProfile">Perfil</label>
+                    <select id="postProfile" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="postUrl">URL do Post</label>
+                    <input type="url" id="postUrl"
+                           placeholder="https://www.instagram.com/p/... ou https://www.tiktok.com/@..."
+                           required autocomplete="off">
+                    <small>Cole a URL direta do post no Instagram ou TikTok</small>
+                </div>
+                <div class="url-preview" id="urlPreview" style="display:none">
+                    <div class="url-preview-inner">
+                        <span class="url-preview-icon" id="urlPreviewIcon"></span>
+                        <span class="url-preview-text" id="urlPreviewText"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="postNotes">Notas de Análise <span class="optional">(opcional)</span></label>
+                    <textarea id="postNotes" placeholder="Ex: Post de maior engajamento da semana, aborda pauta X, comparar com concorrente Y..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('postModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Adicionar Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script>
+'use strict';
+
+const STORAGE_KEY = 'pmdb_v1';
+
+function loadData() {
+    try { const r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r); } catch(_) {}
+    return { profiles: [], posts: [] };
+}
+function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); }
+
+let appData = loadData();
+
+const state = { platformFilter: 'all', profileFilter: null, viewMode: 'gallery', sort: 'newest' };
+
+function parsePostUrl(raw) {
+    const url = raw.trim();
+    const igMatch = url.match(/instagram\.com\/(p|reel|tv)\/([A-Za-z0-9_-]+)/);
+    if (igMatch) {
+        return { platform: 'instagram', embedUrl: `https://www.instagram.com/${igMatch[1]}/${igMatch[2]}/embed/`, embedHeight: 560 };
+    }
+    const ttMatch = url.match(/tiktok\.com\/(?:@[^/]+\/video|video)\/(\d+)/);
+    if (ttMatch) {
+        return { platform: 'tiktok', embedUrl: `https://www.tiktok.com/embed/v2/${ttMatch[1]}`, embedHeight: 700 };
+    }
+    return null;
+}
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function initials(name) { return name.trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase(); }
+function fmtDate(iso) { return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }); }
+function platformLabel(p) { return p === 'instagram' ? 'Instagram' : 'TikTok'; }
+
+function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function toast(msg, type = 'success') {
+    const el = document.createElement('div');
+    el.className = `toast ${type}`; el.textContent = msg;
+    document.getElementById('toastContainer').appendChild(el);
+    setTimeout(() => { el.classList.add('removing'); setTimeout(() => el.remove(), 350); }, 3200);
+}
+
+function openModal(id)  { document.getElementById(id).classList.add('open');    document.body.style.overflow = 'hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+
+function toggleSidebar() {
+    const s = document.getElementById('sidebar'), o = document.getElementById('sidebarOverlay');
+    const open = s.classList.toggle('open'); o.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeSidebarIfMobile() {
+    if (window.innerWidth <= 768) {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+}
+
+function renderStats() {
+    const { profiles, posts } = appData;
+    const igP = profiles.filter(p => p.platform === 'instagram').length;
+    const ttP = profiles.filter(p => p.platform === 'tiktok').length;
+    const igPosts = posts.filter(p => p.platform === 'instagram').length;
+    const ttPosts = posts.filter(p => p.platform === 'tiktok').length;
+    document.getElementById('statsBar').innerHTML = `
+        <div class="stat-chip"><div class="stat-chip-dot all"></div><span class="stat-chip-value">${profiles.length}</span><span class="stat-chip-label">perfis</span></div>
+        <div class="stat-chip"><div class="stat-chip-dot ig"></div><span class="stat-chip-value">${igP}</span><span class="stat-chip-label">IG</span><span class="stat-chip-label">·</span><span class="stat-chip-value">${igPosts}</span><span class="stat-chip-label">posts</span></div>
+        <div class="stat-chip"><div class="stat-chip-dot tt"></div><span class="stat-chip-value">${ttP}</span><span class="stat-chip-label">TT</span><span class="stat-chip-label">·</span><span class="stat-chip-value">${ttPosts}</span><span class="stat-chip-label">posts</span></div>`;
+}
+
+function renderProfiles() {
+    const { profiles, posts } = appData;
+    const list = document.getElementById('profilesList');
+    let visible = state.platformFilter !== 'all' ? profiles.filter(p => p.platform === state.platformFilter) : profiles;
+    if (visible.length === 0) {
+        list.innerHTML = `<div class="sidebar-empty"><div class="sidebar-empty-icon">👤</div>${state.platformFilter === 'all' ? 'Nenhum perfil adicionado ainda.<br>Clique em <strong>+ Adicionar Perfil</strong>.' : `Nenhum perfil de ${platformLabel(state.platformFilter)} encontrado.`}</div>`;
+        return;
+    }
+    list.innerHTML = visible.map(profile => {
+        const count = posts.filter(p => p.profileId === profile.id).length;
+        const isActive = state.profileFilter === profile.id;
+        const ac = isActive ? (profile.platform === 'instagram' ? 'active-ig' : 'active-tt') : '';
+        return `<div class="profile-item ${ac}" data-profile-id="${profile.id}">
+            <div class="profile-avatar ${profile.platform}">${initials(profile.name)}</div>
+            <div class="profile-info">
+                <div class="profile-name">${escHtml(profile.name)}</div>
+                <div class="profile-username">@${escHtml(profile.username)}</div>
+                ${profile.party ? `<div class="profile-party">${escHtml(profile.party)}</div>` : ''}
+            </div>
+            <div class="profile-meta">
+                <span class="platform-badge ${profile.platform}">${profile.platform === 'instagram' ? 'IG' : 'TT'}</span>
+                <span class="post-count-badge">${count}</span>
+            </div>
+            <div class="profile-actions">
+                <button class="icon-btn" title="Adicionar post" onclick="openAddPost('${profile.id}',event)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                <button class="icon-btn danger" title="Remover perfil" onclick="deleteProfile('${profile.id}',event)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+            </div>
+        </div>`;
+    }).join('');
+    list.querySelectorAll('.profile-item').forEach(el => {
+        el.addEventListener('click', () => {
+            const id = el.dataset.profileId;
+            state.profileFilter = state.profileFilter === id ? null : id;
+            closeSidebarIfMobile(); render();
+        });
+    });
+}
+
+function renderActiveFilters() {
+    const container = document.getElementById('activeFilters');
+    const chips = [];
+    if (state.platformFilter !== 'all') {
+        chips.push(`<div class="filter-chip">${state.platformFilter === 'instagram' ? '📸' : '🎵'} ${platformLabel(state.platformFilter)}<button onclick="clearPlatformFilter()" title="Remover filtro"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`);
+    }
+    if (state.profileFilter) {
+        const profile = appData.profiles.find(p => p.id === state.profileFilter);
+        if (profile) chips.push(`<div class="filter-chip">👤 ${escHtml(profile.name)}<button onclick="clearProfileFilter()" title="Remover filtro"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`);
+    }
+    container.innerHTML = chips.join('');
+    container.style.display = chips.length ? 'flex' : 'none';
+}
+
+function clearPlatformFilter() {
+    state.platformFilter = 'all';
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.platform === 'all'));
+    render();
+}
+function clearProfileFilter() { state.profileFilter = null; render(); }
+
+function renderGallery() {
+    const { profiles, posts } = appData;
+    const gallery = document.getElementById('postsGallery');
+    const emptyState = document.getElementById('emptyState');
+    let filtered = [...posts];
+    if (state.platformFilter !== 'all') filtered = filtered.filter(p => p.platform === state.platformFilter);
+    if (state.profileFilter) filtered = filtered.filter(p => p.profileId === state.profileFilter);
+    if (state.sort === 'newest')   filtered.sort((a,b) => new Date(b.addedAt) - new Date(a.addedAt));
+    else if (state.sort === 'oldest')   filtered.sort((a,b) => new Date(a.addedAt) - new Date(b.addedAt));
+    else if (state.sort === 'profile')  filtered.sort((a,b) => { const pa = profiles.find(p=>p.id===a.profileId)?.name||''; const pb = profiles.find(p=>p.id===b.profileId)?.name||''; return pa.localeCompare(pb,'pt-BR'); });
+    else if (state.sort === 'platform') filtered.sort((a,b) => a.platform.localeCompare(b.platform));
+    gallery.className = `gallery${state.viewMode === 'list' ? ' list-view' : ''}`;
+    if (filtered.length === 0) {
+        gallery.innerHTML = ''; gallery.style.display = 'none';
+        emptyState.style.display = 'flex'; updateEmptyState(); return;
+    }
+    gallery.style.display = ''; emptyState.style.display = 'none';
+    gallery.innerHTML = filtered.map(post => {
+        const profile = profiles.find(p => p.id === post.profileId);
+        if (!profile) return '';
+        const lid = `loader-${post.id}`;
+        return `<div class="post-card ${post.platform}" data-post-id="${post.id}">
+            <div class="post-card-header">
+                <div class="post-profile-left">
+                    <div class="post-avatar ${post.platform}">${initials(profile.name)}</div>
+                    <div class="post-profile-info">
+                        <div class="post-profile-name">${escHtml(profile.name)}</div>
+                        <div class="post-profile-username">@${escHtml(profile.username)}</div>
+                    </div>
+                </div>
+                <div class="post-card-controls">
+                    <a href="${escHtml(post.url)}" target="_blank" rel="noopener noreferrer" class="icon-btn" title="Abrir post original"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+                    <button class="icon-btn danger" title="Remover post" onclick="deletePost('${post.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                </div>
+            </div>
+            <div class="post-embed-container" style="min-height:${post.embedHeight}px">
+                <div class="embed-loading" id="${lid}"><div class="embed-loading-spinner"></div><span>Carregando ${platformLabel(post.platform)}...</span></div>
+                <iframe src="${escHtml(post.embedUrl)}" height="${post.embedHeight}" loading="lazy" scrolling="no" frameborder="0" allowtransparency="true" allow="encrypted-media; autoplay" title="Post de ${escHtml(profile.name)}" onload="document.getElementById('${lid}').style.display='none'" style="position:relative;z-index:1"></iframe>
+            </div>
+            <div class="post-card-footer">
+                ${post.notes ? `<div class="post-notes-text">${escHtml(post.notes)}</div>` : ''}
+                <div class="post-footer-meta">
+                    <span class="post-date">Adicionado em ${fmtDate(post.addedAt)}</span>
+                    <span class="platform-badge ${post.platform}">${platformLabel(post.platform)}</span>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function updateEmptyState() {
+    const { profiles, posts } = appData;
+    const icon = document.getElementById('emptyIcon'), title = document.getElementById('emptyTitle');
+    const msg = document.getElementById('emptyMessage'), steps = document.getElementById('onboardingSteps');
+    const addPost = document.getElementById('emptyAddPostBtn');
+    if (profiles.length === 0) {
+        icon.textContent = '🏛️'; title.textContent = 'Bem-vindo ao Political Media Dashboard';
+        msg.textContent = 'Monitore e compare o conteúdo de políticos no Instagram e TikTok para benchmarking.';
+        steps.style.display = 'flex'; addPost.style.display = 'none';
+    } else if (posts.length === 0) {
+        icon.textContent = '📎'; title.textContent = 'Perfis adicionados — agora adicione posts';
+        msg.textContent = 'Cole a URL de posts do Instagram ou TikTok para começar a visualizar o conteúdo.';
+        steps.style.display = 'none'; addPost.style.display = 'flex';
+    } else {
+        icon.textContent = '🔍'; title.textContent = 'Nenhum post neste filtro';
+        msg.textContent = 'Tente remover os filtros ativos ou adicionar posts para os perfis selecionados.';
+        steps.style.display = 'none'; addPost.style.display = 'flex';
+    }
+}
+
+function render() { renderStats(); renderProfiles(); renderActiveFilters(); renderGallery(); }
+
+function deleteProfile(id, event) {
+    event.stopPropagation();
+    const profile = appData.profiles.find(p => p.id === id); if (!profile) return;
+    const cnt = appData.posts.filter(p => p.profileId === id).length;
+    if (!confirm(`Remover o perfil "${profile.name}" e todos os ${cnt} posts associados?`)) return;
+    appData.profiles = appData.profiles.filter(p => p.id !== id);
+    appData.posts    = appData.posts.filter(p => p.profileId !== id);
+    if (state.profileFilter === id) state.profileFilter = null;
+    saveData(); render(); toast(`Perfil "${profile.name}" removido`);
+}
+
+function openAddPost(profileId, event) {
+    if (event) event.stopPropagation();
+    populateProfileSelect(profileId); openModal('postModal');
+}
+
+function deletePost(id) {
+    if (!confirm('Remover este post da galeria?')) return;
+    appData.posts = appData.posts.filter(p => p.id !== id);
+    saveData(); render(); toast('Post removido');
+}
+
+function populateProfileSelect(selectedId) {
+    document.getElementById('postProfile').innerHTML = appData.profiles.map(p =>
+        `<option value="${p.id}" ${p.id === selectedId ? 'selected' : ''}>${p.platform === 'instagram' ? '📸' : '🎵'} ${escHtml(p.name)} (@${escHtml(p.username)})</option>`
+    ).join('');
+}
+
+function resetPlatformOptions() {
+    document.querySelectorAll('.platform-option').forEach(b => b.classList.remove('active'));
+    const igBtn = document.querySelector('.platform-option[data-platform="instagram"]');
+    if (igBtn) igBtn.classList.add('active');
+    const field = document.getElementById('selectedPlatform');
+    if (field) field.value = 'instagram';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active','active-ig','active-tt'));
+            const p = btn.dataset.platform;
+            btn.classList.add('active', p==='instagram'?'active-ig':p==='tiktok'?'active-tt':'');
+            state.platformFilter = p; state.profileFilter = null; render();
+        });
+    });
+
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active'); state.viewMode = btn.dataset.view; render();
+        });
+    });
+
+    document.getElementById('sortSelect').addEventListener('change', e => { state.sort = e.target.value; render(); });
+
+    document.getElementById('addProfileBtn').addEventListener('click', () => openModal('profileModal'));
+    document.getElementById('sidebarAddProfileBtn').addEventListener('click', () => { closeSidebarIfMobile(); openModal('profileModal'); });
+
+    document.getElementById('addPostBtn').addEventListener('click', () => {
+        if (appData.profiles.length === 0) { toast('Adicione um perfil primeiro', 'error'); return; }
+        populateProfileSelect(appData.profiles[0].id); openModal('postModal');
+    });
+
+    document.getElementById('emptyAddProfileBtn').addEventListener('click', () => openModal('profileModal'));
+    document.getElementById('emptyAddPostBtn').addEventListener('click', () => {
+        if (appData.profiles.length === 0) { toast('Adicione um perfil primeiro', 'error'); return; }
+        populateProfileSelect(appData.profiles[0].id); openModal('postModal');
+    });
+
+    document.querySelectorAll('.platform-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.platform-option').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('selectedPlatform').value = btn.dataset.platform;
+        });
+    });
+
+    document.getElementById('postUrl').addEventListener('input', e => {
+        const preview = document.getElementById('urlPreview');
+        const parsed  = parsePostUrl(e.target.value);
+        if (parsed) {
+            document.getElementById('urlPreviewIcon').textContent = parsed.platform === 'instagram' ? '📸' : '🎵';
+            document.getElementById('urlPreviewText').textContent = `URL de ${platformLabel(parsed.platform)} válida ✓`;
+            preview.style.display = 'block';
+        } else { preview.style.display = 'none'; }
+    });
+
+    document.getElementById('profileForm').addEventListener('submit', e => {
+        e.preventDefault();
+        let username = document.getElementById('profileUsername').value.trim();
+        if (username.startsWith('@')) username = username.slice(1);
+        const name = document.getElementById('profileName').value.trim();
+        const platform = document.getElementById('selectedPlatform').value;
+        const party = document.getElementById('profileParty').value.trim();
+        if (!name || !username) return;
+        const dup = appData.profiles.find(p => p.platform === platform && p.username.toLowerCase() === username.toLowerCase());
+        if (dup) { toast(`@${username} no ${platformLabel(platform)} já existe`, 'error'); return; }
+        appData.profiles.push({ id: uid(), name, platform, username, party, addedAt: new Date().toISOString() });
+        saveData(); closeModal('profileModal'); e.target.reset(); resetPlatformOptions(); render();
+        toast(`Perfil "${name}" adicionado!`);
+    });
+
+    document.getElementById('postForm').addEventListener('submit', e => {
+        e.preventDefault();
+        const profileId = document.getElementById('postProfile').value;
+        const url = document.getElementById('postUrl').value.trim();
+        const notes = document.getElementById('postNotes').value.trim();
+        const parsed = parsePostUrl(url);
+        if (!parsed) { toast('URL inválida. Use links do Instagram (instagram.com/p/...) ou TikTok.', 'error'); return; }
+        if (appData.posts.some(p => p.embedUrl === parsed.embedUrl)) { toast('Este post já foi adicionado à galeria.', 'error'); return; }
+        const profile = appData.profiles.find(p => p.id === profileId);
+        if (profile && profile.platform !== parsed.platform) {
+            toast(`A URL é de ${platformLabel(parsed.platform)}, mas o perfil é de ${platformLabel(profile.platform)}.`, 'error'); return;
+        }
+        appData.posts.push({ id: uid(), profileId, url, platform: parsed.platform, embedUrl: parsed.embedUrl, embedHeight: parsed.embedHeight, notes, addedAt: new Date().toISOString() });
+        saveData(); closeModal('postModal'); e.target.reset();
+        document.getElementById('urlPreview').style.display = 'none';
+        render(); toast('Post adicionado à galeria!');
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal.open').forEach(m => { m.classList.remove('open'); document.body.style.overflow = ''; });
+            const s = document.getElementById('sidebar');
+            if (s.classList.contains('open')) toggleSidebar();
+        }
+    });
+
+    render();
+});
+</script>
+</body>
+</html>
